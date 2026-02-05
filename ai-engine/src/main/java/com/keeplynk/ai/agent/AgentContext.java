@@ -12,6 +12,7 @@ public class AgentContext {
     private String persona;
     private String userId;
     private String content;  // Actual page/document content
+    private List<String> existingFolders;  // User's existing folder names
     private Map<String, Object> memory = new HashMap<>();
     private List<String> reasoning = new ArrayList<>();
     private Map<String, Boolean> needs; // what AI should do
@@ -27,6 +28,7 @@ public class AgentContext {
         context.setPersona(input.getPersona());
         context.setUserId(input.getUserId());
         context.setContent(input.getContent());
+        context.setExistingFolders(input.getExistingFolders());
         context.setNeeds(input.getNeeds());
         return context;
     }
@@ -38,6 +40,7 @@ public class AgentContext {
         context.setPersona(input.getPersona());
         context.setUserId(input.getUserId());
         context.setContent(input.getContent());
+        context.setExistingFolders(input.getExistingFolders());
         context.setNeeds(input.getNeeds());
         return context;
     }
@@ -89,6 +92,14 @@ public class AgentContext {
 	}
 	public void setNeeds(Map<String, Boolean> needs) {
 		this.needs = needs;
+	}
+
+	public List<String> getExistingFolders() {
+		return existingFolders;
+	}
+
+	public void setExistingFolders(List<String> existingFolders) {
+		this.existingFolders = existingFolders;
 	}
 
     

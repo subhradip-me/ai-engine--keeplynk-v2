@@ -15,6 +15,7 @@ public class AgentInput {
     // New fields for Auto Organise feature
     private String existingTitle;
     private String existingDescription;
+    private java.util.List<String> existingFolders; // User's existing folder names for intelligent reuse
     private Map<String, Boolean> needs; // what AI should do: {title: true, description: false, tags: true}
 
     public String getResourceId() {
@@ -75,6 +76,14 @@ public class AgentInput {
 
     public String getExistingTitle() {
         return existingTitle;
+    }
+
+    public java.util.List<String> getExistingFolders() {
+        return existingFolders;
+    }
+
+    public void setExistingFolders(java.util.List<String> existingFolders) {
+        this.existingFolders = existingFolders;
     }
 
     public void setExistingTitle(String existingTitle) {

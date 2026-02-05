@@ -26,6 +26,12 @@ public class CategorySkill implements Skill {
     public void apply(AgentContext context) {
         context.addReasoning("CategorySkill started");
 
+        // Get existing folders for intelligent reuse
+        String existingFoldersText = "";
+        if (context.getExistingFolders() != null && !context.getExistingFolders().isEmpty()) {
+            existingFoldersText = "\n\nUser's Existing Folders:\n" + String.join(", ", context.getExistingFolders());
+        }
+
         // Build prompt with content if available
         String prompt;
         if (context.getContent() != null && !context.getContent().isEmpty()) {
@@ -37,26 +43,33 @@ public class CategorySkill implements Skill {
                 
                 Content Preview:
                 %s
+                %s
 
                 Rules:
                 - Choose ONE category based on the actual content
+                - PREFER reusing one of the user's existing folders if it matches the content theme
+                - Only create a new folder name if none of the existing folders are suitable
                 - Use simple, clear category names
                 - Category should reflect the main topic/theme of the content
                 - Output category name only
                 """.formatted(context.getUrl(), context.getPersona(),
-                    context.getContent().substring(0, Math.min(500, context.getContent().length())));
+                    context.getContent().substring(0, Math.min(500, context.getContent().length())),
+                    existingFoldersText);
         } else {
             prompt = """
                 Categorize the following URL into ONE category/folder name.
 
                 URL: %s
                 Persona: %s
+                %s
 
                 Rules:
                 - Choose ONE category
+                - PREFER reusing one of the user's existing folders if it matches
+                - Only create a new folder name if none of the existing folders are suitable
                 - Use simple, clear category names
                 - Output category name only
-                """.formatted(context.getUrl(), context.getPersona());
+                """.formatted(context.getUrl(), context.getPersona(), existingFoldersText);
         }
 
         String rawCategory = llmClient.generate(prompt);
