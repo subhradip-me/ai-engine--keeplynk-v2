@@ -1,0 +1,28 @@
+# Environment Variables (CRITICAL - Never commit!)
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Eclipse/STS Metadata
+.metadata/
+
+# Build Output
+target/
+
+# Docker Override
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Temporary Files
+*.tmp
+*.bak
+*~

@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = []
+
+[phases.build]
+cmds = ["echo 'Using Dockerfile instead of Nixpacks'"]
+
+[start]
+cmd = "echo 'This project uses Docker - see railway.json'"

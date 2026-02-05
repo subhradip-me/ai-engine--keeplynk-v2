@@ -1,0 +1,68 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# IDE
+.idea
+.vscode
+.eclipse
+.metadata
+.settings
+.classpath
+.project
+.factorypath
+*.iml
+*.iws
+*.ipr
+
+# Build artifacts
+target/
+build/
+out/
+*.class
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Environment files
+.env
+.env.*
+*.local
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Test files
+test-results/
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Railway specific (if using Docker on Railway)
+.railway
+railway.json
+nixpacks.toml
+Procfile
+.railwayignore

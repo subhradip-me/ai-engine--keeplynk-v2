@@ -1,0 +1,33 @@
+# Railway ignore file
+.git/
+.github/
+.vscode/
+.idea/
+.metadata/
+*.log
+*.tmp
+*.bak
+node_modules/
+test-results/
+coverage/
+
+# Build artifacts (will be rebuilt on Railway)
+target/
+*.class
+
+# Local environment files
+.env.local
+.env.*.local
+
+# IDE specific files
+.classpath
+.project
+.settings/
+.factorypath
+*.iml
+*.iws
+*.ipr
+
+# OS specific files
+.DS_Store
+Thumbs.db

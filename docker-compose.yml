@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0-alpine
+    container_name: keeplynk-ai-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-changeme}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-keeplynk_ai}
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - keeplynk-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # AI Engine Service
+  ai-engine:
+    build:
+      context: .
+      dockerfile: ai-engine/Dockerfile
+    container_name: keeplynk-ai-engine
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8081}:8081"
+    environment:
+      # Spring Profile
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
+      
+      # Server Configuration
+      PORT: 8081
+      
+      # LLM API Keys
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      HF_API_KEY: ${HF_API_KEY}
+      
+      # MongoDB Configuration
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD:-changeme}@mongodb:27017/${MONGO_DATABASE:-keeplynk_ai}?authSource=admin
+      MONGODB_DATABASE: ${MONGO_DATABASE:-keeplynk_ai}
+      
+      # Optional: CORS Configuration
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+      
+      # JVM Options
+      JAVA_OPTS: ${JAVA_OPTS:--Xmx512m -Xms256m}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - keeplynk-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  keeplynk-network:
+    driver: bridge
