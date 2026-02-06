@@ -1,5 +1,6 @@
 package com.keeplynk.ai.agent;
 
+import com.keeplynk.ai.skill.CategorySkill;
 import com.keeplynk.ai.skill.DescriptionSkill;
 import com.keeplynk.ai.skill.Skill;
 import com.keeplynk.ai.skill.TagSkill;
@@ -40,6 +41,8 @@ public class ResourceAgent implements Agent {
             } else if (skill instanceof DescriptionSkill && needs.getOrDefault("description", false)) {
                 shouldExecute = true;
             } else if (skill instanceof TagSkill && needs.getOrDefault("tags", false)) {
+                shouldExecute = true;
+            } else if (skill instanceof CategorySkill && needs.getOrDefault("category", false)) {
                 shouldExecute = true;
             }
             
