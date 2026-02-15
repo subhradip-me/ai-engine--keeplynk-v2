@@ -5,6 +5,7 @@ import com.keeplynk.ai.skill.DescriptionSkill;
 import com.keeplynk.ai.skill.Skill;
 import com.keeplynk.ai.skill.TagSkill;
 import com.keeplynk.ai.skill.TitleSkill;
+import com.keeplynk.ai.skill.TranscriptSkill;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,8 +36,12 @@ public class ResourceAgent implements Agent {
         for (Skill skill : skills) {
             boolean shouldExecute = false;
             
+            // TranscriptSkill should always run first for video URLs to provide context for other skills
+            if (skill instanceof TranscriptSkill) {
+                shouldExecute = true; // Always execute for video content detection
+            }
             // Check if this skill is needed
-            if (skill instanceof TitleSkill && needs.getOrDefault("title", false)) {
+            else if (skill instanceof TitleSkill && needs.getOrDefault("title", false)) {
                 shouldExecute = true;
             } else if (skill instanceof DescriptionSkill && needs.getOrDefault("description", false)) {
                 shouldExecute = true;
