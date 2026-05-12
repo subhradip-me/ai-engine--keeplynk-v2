@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class AgentContext {
 
+	private static final int MAX_CONTENT_CHARS = 20000;
+
     private String resourceId;
     private String url;
     private String persona;
@@ -73,7 +75,7 @@ public class AgentContext {
 		return content;
 	}
 	public void setContent(String content) {
-		this.content = content;
+		this.content = truncateContent(content);
 	}
 	public Map<String, Object> getMemory() {
 		return memory;
@@ -100,6 +102,16 @@ public class AgentContext {
 
 	public void setExistingFolders(List<String> existingFolders) {
 		this.existingFolders = existingFolders;
+	}
+
+	private static String truncateContent(String value) {
+		if (value == null) {
+			return null;
+		}
+		if (value.length() <= MAX_CONTENT_CHARS) {
+			return value;
+		}
+		return value.substring(0, MAX_CONTENT_CHARS);
 	}
 
     

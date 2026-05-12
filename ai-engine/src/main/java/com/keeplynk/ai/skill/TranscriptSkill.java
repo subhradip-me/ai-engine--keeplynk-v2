@@ -1,7 +1,6 @@
 package com.keeplynk.ai.skill;
 
 import com.keeplynk.ai.agent.AgentContext;
-import com.keeplynk.ai.llm.LlmClient;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Order(0) // Execute before all other skills to provide transcript content
 public class TranscriptSkill implements Skill {
 
-    private final LlmClient llmClient;
-    private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
+    private static final int MAX_VIDEO_INFO_CHARS = 4000;
+
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Patterns for different video platforms
     private static final Pattern YOUTUBE_PATTERN = Pattern.compile(
@@ -29,12 +29,6 @@ public class TranscriptSkill implements Skill {
     private static final Pattern VIMEO_PATTERN = Pattern.compile(
         "vimeo\\.com/(\\d+)"
     );
-
-    public TranscriptSkill(LlmClient llmClient) {
-        this.llmClient = llmClient;
-        this.httpClient = HttpClient.newHttpClient();
-        this.objectMapper = new ObjectMapper();
-    }
 
     @Override
     public void apply(AgentContext context) {
@@ -57,14 +51,15 @@ public class TranscriptSkill implements Skill {
             String videoInfo = getVideoTranscript(url, videoId);
             
             if (videoInfo != null && !videoInfo.isEmpty()) {
+                String trimmedVideoInfo = truncate(videoInfo, MAX_VIDEO_INFO_CHARS);
                 // Store transcript/video info in context for other skills to use
-                context.getMemory().put("videoTranscript", videoInfo);
+                context.getMemory().put("videoTranscript", trimmedVideoInfo);
                 context.getMemory().put("isVideoContent", true);
                 
                 // Update content with video information
                 String enhancedContent = context.getContent() != null ? 
-                    context.getContent() + "\n\n[Video Transcript]\n" + videoInfo : 
-                    "[Video Transcript]\n" + videoInfo;
+                    context.getContent() + "\n\n[Video Transcript]\n" + trimmedVideoInfo : 
+                    "[Video Transcript]\n" + trimmedVideoInfo;
                 context.setContent(enhancedContent);
                 
                 context.addReasoning("TranscriptSkill: Successfully extracted video transcript/metadata");
@@ -326,5 +321,15 @@ public class TranscriptSkill implements Skill {
             // Ignore errors and return null
         }
         return null;
+    }
+
+    private static String truncate(String value, int maxChars) {
+        if (value == null) {
+            return null;
+        }
+        if (value.length() <= maxChars) {
+            return value;
+        }
+        return value.substring(0, maxChars);
     }
 }
